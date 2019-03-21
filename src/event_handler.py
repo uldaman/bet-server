@@ -1,12 +1,21 @@
 from repository import Quiz, Player
+from enum import Enum, unique
+
+
+@unique
+class Stage(Enum):
+    Active = 1
+    Locked = 2
+    Canceled = 3
+    Finished = 4
 
 
 def handle_event(name, event):
     handle_mapping = {
         '_creat': lambda: _handle_creat_event(event),
-        '_cancel': lambda: _update_stage(event, 3),
-        '_lock': lambda: _update_stage(event, 2),
-        '_finish': lambda: _update_stage(event, 4),
+        '_cancel': lambda: _update_stage(event, Stage.Canceled.value),
+        '_lock': lambda: _update_stage(event, Stage.Locked.value),
+        '_finish': lambda: _update_stage(event, Stage.Finished.value),
         '_join': lambda: _update_bet(event, 'inc'),
         '_repent': lambda: _update_bet(event, 'dec')
     }
@@ -16,7 +25,7 @@ def handle_event(name, event):
 
 def _handle_creat_event(event):
     def logo_path(x): return '/static/img/{}.png'.format(x.lower())
-    quiz = Quiz(**event, stage=1,
+    quiz = Quiz(**event, stage=Stage.Active.value,
                 leftLogo=logo_path(event['leftName']),
                 rightLogo=logo_path(event['rightName']))
     try:
