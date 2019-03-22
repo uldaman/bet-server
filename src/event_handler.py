@@ -16,8 +16,8 @@ def handle_event(name, event):
         '_cancel': lambda: _update_stage(event, Stage.Canceled.value),
         '_lock': lambda: _update_stage(event, Stage.Locked.value),
         '_finish': lambda: _update_stage(event, Stage.Finished.value),
-        '_join': lambda: _update_bet(event, 'inc'),
-        '_repent': lambda: _update_bet(event, 'dec')
+        '_join': lambda: _update_bet(event, 'inc_bet'),
+        '_repent': lambda: _update_bet(event, 'dec_bet')
     }
     if name in handle_mapping:
         handle_mapping[name]()
@@ -40,11 +40,12 @@ def _update_stage(event, new_stage):
 
 
 def _update_bet(event, dec_inc):
-    quiz = Quiz.objects(_id=event['_id'])
-    player = Player.objects(player=event['player'], quiz=event['_id'])
+    def _update(obj): getattr(obj, dec_inc)(left_right, event['stakes'])
+
     left_right = 'left' if event['combatant'] == 1 else 'right'
-    new_bet = {
-        '{}__{}Bet'.format(dec_inc, left_right): event['stakes'] / pow(10, 18)
-    }
-    player.upsert_one(**new_bet)
-    quiz.update(**new_bet)
+
+    quiz = Quiz.objects(_id=event['_id'])
+    _update(quiz)
+
+    player = Player.objects(player=event['player'], quiz=event['_id'])
+    _update(player)

@@ -1,16 +1,20 @@
 from quiz import Quiz
 from mongoengine import *
+from bet_updater import BetUpdater
 connect('lol-match')
 
 
 class Player(Document):
+    meta = {}
+
     player = StringField(required=True)
     quiz = ReferenceField(Quiz, required=True)
-    leftBet = IntField(default=0)
-    rightBet = IntField(default=0)
+    leftBet = StringField(default='0')
+    rightBet = StringField(default='0')
 
     meta = {
         'strict': False,
+        'queryset_class': BetUpdater,
         'indexes': [
             'player',
             {
@@ -22,15 +26,4 @@ class Player(Document):
 
 
 if __name__ == "__main__":
-    pass
-    # player = Player(
-    #     player='0x1',
-    #     quiz=Quiz.objects(gameName='LPL').next(),
-    #     bets=[{
-    #         'amount': 100,
-    #         'combatant': 1
-    #     }]
-    # )
-    # player.save(force_insert=True)
-    # for player in Player.objects(quiz=2):
-    #     print(player.quiz)
+    Player.objects(player='0x3', quiz=1).inc_bet('right', 10000)

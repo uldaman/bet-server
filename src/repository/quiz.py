@@ -1,4 +1,5 @@
 from mongoengine import *
+from bet_updater import BetUpdater
 connect('lol-match')
 
 
@@ -9,17 +10,18 @@ class Quiz(Document):
     gameName = StringField(required=True)
 
     leftName = StringField(required=True)
-    leftBet = IntField(default=0)
+    leftBet = StringField(default='0')
     leftScore = IntField(default=0)
     leftLogo = StringField(required=True)
 
     rightName = StringField(required=True)
-    rightBet = IntField(default=0)
+    rightBet = StringField(default='0')
     rightScore = IntField(default=0)
     rightLogo = StringField(required=True)
 
     meta = {
         'strict': False,
+        'queryset_class': BetUpdater,
         'indexes': ['gameName', 'stage',  ('gameName', '-stage')]
     }
 
