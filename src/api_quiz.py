@@ -23,7 +23,8 @@ class QuizsAPI(Resource):
         page = args.pop('page')
         pagesize = args.pop('pagesize')
         offset = page * pagesize
-        quiz = Quiz.objects(**args)[offset:offset+pagesize].to_json()
+        quiz = Quiz.objects(
+            **args).order_by('-startTime')[offset:offset+pagesize].to_json()
         return json.loads(quiz)
 
 
