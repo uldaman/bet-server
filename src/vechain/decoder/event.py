@@ -3,7 +3,7 @@ from utils import *
 from collections import namedtuple
 
 
-Event = namedtuple('Event', ['name', 'args'])
+Event = namedtuple('Event', ['name', 'args', 'block'])
 
 
 class EventDecoder(object):
@@ -40,7 +40,7 @@ class EventDecoder(object):
             'anonymous': abi.get('anonymous', False),
         }
 
-    def decode_event(self, log_topics, log_data):
+    def decode_event(self, log):
         """ Return a dictionary representation the log.
 
         Note:
@@ -54,6 +54,10 @@ class EventDecoder(object):
 
         # topics[0]: keccak(EVENT_NAME+"("+EVENT_ARGS.map(canonical_type_of).join(",")+")")
         # If the event is declared as anonymous the topics[0] is not generated;
+
+        log_topics = log['topics']
+        log_data = log['data']
+
         if not len(log_topics) or log_topics[0] not in self.event_data:
             raise ValueError('Unknown log type')
 
@@ -95,7 +99,7 @@ class EventDecoder(object):
                 value = unindexed_args.pop(0)
             result[arg] = value
 
-        return Event(event['name'], result)
+        return Event(event['name'], result, log['meta']['blockNumber'])
 
 
 # Decodes multiple arguments using the head/tail mechanism
