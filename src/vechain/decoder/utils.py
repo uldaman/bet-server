@@ -2,6 +2,7 @@ from eth_utils import to_bytes, to_int, encode_hex as encode_hex_0x
 
 
 TT256 = 2 ** 256
+unicode = str
 
 
 def zpad(x, l):
