@@ -1,6 +1,6 @@
 import json
 from event_handler import handle_event
-from vechain import Contract, Block
+from vecha import Contract
 from task import Task, Task_Queue
 
 
@@ -23,21 +23,16 @@ def set_start_block_num(block_num: int):
         f.write(str(block_num))
 
 
-contarct = Contract('0x72Ca1aafE8E8f84ABbFba3705c35F084eCd21989',
-                    'https://sync-testnet.vechain.org')
-
-block = Block('https://sync-testnet.vechain.org')
-
-
-event_abi_list = list(
-    filter(lambda x: x.get('type', '') == 'event',
-           get_abi_from_file('contract.json'))
+contarct = Contract(
+    'https://sync-testnet.vechain.org',
+    '0x72Ca1aafE8E8f84ABbFba3705c35F084eCd21989',
+    get_abi_from_file('contract.json')
 )
 
 
 def sync():
     print('开始同步, 请勿退出!')
-    for event in contarct.get_events(get_start_block_num(), block.best_num(), event_abi_list):
+    for event in contarct.get_events(start_block_num=get_start_block_num()):
         print(event)
         handle_event(event.name, event.args)
         set_start_block_num(event.block + 1)
