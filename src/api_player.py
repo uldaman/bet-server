@@ -20,17 +20,15 @@ class PlayerAPI(Resource):
 
     def get(self):
         args = self.reqparse.parse_args()
-        page = args.pop('page')
-        pagesize = args.pop('pagesize')
-        offset = page * pagesize
+
+        ps = Player.select(Player.player, Quiz.gameName, Quiz.stage, Quiz.startTime, Quiz.leftLogo, Quiz.rightLogo)\
+            .where(Player.player == args.pop('player'))\
+            .join(Quiz)\
+            .order_by(Quiz.startTime)\
+            .paginate(args.pop('page') + 1, args.pop('pagesize'))\
+            .dicts()
+
         if 'stage' in args:
-            stage = args.pop('stage')
-            args['quiz__in'] = Quiz.objects(stage=stage)
-        result = []
-        for player in Player.objects(**args)[offset:offset+pagesize]:
-            quiz = json.loads(player.quiz.to_json())
-            player = json.loads(player.to_json())
-            player['quiz'] = quiz
-            del player['_id']
-            result.append(player)
-        return result
+            ps = ps.where(Quiz.stage == args.pop('stage'))
+
+        return list(ps)

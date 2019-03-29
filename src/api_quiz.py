@@ -1,6 +1,7 @@
 import json
 from flask_restful import Resource, reqparse
 from repository import Quiz
+from peewee import DoesNotExist
 
 
 class QuizsAPI(Resource):
@@ -20,12 +21,19 @@ class QuizsAPI(Resource):
 
     def get(self):
         args = self.reqparse.parse_args()
-        page = args.pop('page')
-        pagesize = args.pop('pagesize')
-        offset = page * pagesize
-        quiz = Quiz.objects(
-            **args).order_by('-startTime')[offset:offset+pagesize].to_json()
-        return json.loads(quiz)
+
+        qs = Quiz.select()\
+            .order_by(Quiz.startTime)\
+            .paginate(args.pop('page') + 1, args.pop('pagesize'))\
+            .dicts()
+
+        if 'stage' in args:
+            qs = qs.where(Quiz.stage == args.pop('stage'))
+
+        if 'gameName' in args:
+            qs = qs.where(Quiz.gameName == args.pop('gameName'))
+
+        return list(qs)
 
 
 class QuizAPI(Resource):
@@ -34,7 +42,7 @@ class QuizAPI(Resource):
         super(QuizAPI, self).__init__()
 
     def get(self, uid):
-        quiz = Quiz.objects(_id=uid).first()
-        if quiz:
-            return json.loads(quiz.to_json())
-        return {}
+        try:
+            return Quiz.select().where(Quiz._id == uid).dicts().get()
+        except DoesNotExist:
+            return {}
