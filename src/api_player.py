@@ -24,7 +24,7 @@ class PlayerAPI(Resource):
         ps = Player.select(Player.player, Quiz._id, Quiz.gameName, Quiz.stage, Quiz.startTime, Quiz.leftLogo, Quiz.rightLogo)\
             .where(Player.player == args.pop('player'))\
             .join(Quiz)\
-            .order_by(Quiz.startTime)\
+            .order_by(Quiz.startTime.desc())\
             .paginate(args.pop('page') + 1, args.pop('pagesize'))\
             .dicts()
 

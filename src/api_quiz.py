@@ -23,7 +23,7 @@ class QuizsAPI(Resource):
         args = self.reqparse.parse_args()
 
         qs = Quiz.select()\
-            .order_by(Quiz.startTime)\
+            .order_by(Quiz.startTime.desc())\
             .paginate(args.pop('page') + 1, args.pop('pagesize'))\
             .dicts()
 
