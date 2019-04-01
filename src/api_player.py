@@ -21,7 +21,7 @@ class PlayerAPI(Resource):
     def get(self):
         args = self.reqparse.parse_args()
 
-        ps = Player.select(Player.player, Quiz.gameName, Quiz.stage, Quiz.startTime, Quiz.leftLogo, Quiz.rightLogo)\
+        ps = Player.select(Player.player, Quiz._id, Quiz.gameName, Quiz.stage, Quiz.startTime, Quiz.leftLogo, Quiz.rightLogo)\
             .where(Player.player == args.pop('player'))\
             .join(Quiz)\
             .order_by(Quiz.startTime)\
