@@ -3,3 +3,4 @@ flask_cors
 peewee
 pymysql
 vecha
+configparser

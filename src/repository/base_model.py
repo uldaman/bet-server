@@ -1,6 +1,8 @@
 from peewee import Model, MySQLDatabase
 
-mysql_db = MySQLDatabase('lol-match', user='root', password='Hanxiao123!@#')
+
+# mysql_db must be inited externally
+mysql_db = MySQLDatabase(None)
 
 
 class BaseModel(Model):

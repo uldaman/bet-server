@@ -1,7 +1,12 @@
 import json
+import config
 from event_handler import handle_event
 from vecha import Contract
 from task import Task, Task_Queue
+from repository import mysql_db
+
+
+mysql_db.init(config.database, user=config.user, password=config.password)
 
 
 def get_abi_from_file(file_path: str):
@@ -24,9 +29,9 @@ def set_start_block_num(block_num: int):
 
 
 contarct = Contract(
-    'https://sync-testnet.vechain.org',
-    '0x72Ca1aafE8E8f84ABbFba3705c35F084eCd21989',
-    get_abi_from_file('contract.json')
+    config.endpoint,
+    config.contract,
+    get_abi_from_file(config.abifile)
 )
 
 

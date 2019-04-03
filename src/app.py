@@ -4,9 +4,12 @@ from flask import Flask
 from flask_restful import Api
 from flask_cors import CORS
 from repository import mysql_db
+from config import database, user, password
 
 
 app = Flask(__name__, static_url_path='/static')
+
+mysql_db.init(database, user=user, password=password)
 
 
 @app.before_request
