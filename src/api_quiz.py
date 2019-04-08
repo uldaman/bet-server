@@ -22,10 +22,7 @@ class QuizsAPI(Resource):
     def get(self):
         args = self.reqparse.parse_args()
 
-        qs = Quiz.select()\
-            .order_by(Quiz.startTime.desc())\
-            .paginate(args.pop('page') + 1, args.pop('pagesize'))\
-            .dicts()
+        qs = Quiz.select()
 
         if 'stage' in args:
             qs = qs.where(Quiz.stage == args.pop('stage'))
@@ -33,7 +30,15 @@ class QuizsAPI(Resource):
         if 'gameName' in args:
             qs = qs.where(Quiz.gameName == args.pop('gameName'))
 
-        return list(qs)
+        count = qs.count()
+        data = qs.order_by(Quiz.startTime.desc())\
+            .paginate(args.pop('page') + 1, args.pop('pagesize'))\
+            .dicts()
+
+        return {
+            'count': count,
+            'data': list(data)
+        }
 
 
 class QuizAPI(Resource):

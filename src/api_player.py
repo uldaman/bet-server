@@ -23,12 +23,17 @@ class PlayerAPI(Resource):
 
         ps = Player.select(Player.player, Quiz._id, Quiz.gameName, Quiz.stage, Quiz.startTime, Quiz.leftLogo, Quiz.rightLogo)\
             .where(Player.player == args.pop('player'))\
-            .join(Quiz)\
-            .order_by(Quiz.startTime.desc())\
-            .paginate(args.pop('page') + 1, args.pop('pagesize'))\
-            .dicts()
+            .join(Quiz)
 
         if 'stage' in args:
             ps = ps.where(Quiz.stage == args.pop('stage'))
 
-        return list(ps)
+        count = ps.count()
+        data = ps.order_by(Quiz.startTime.desc())\
+            .paginate(args.pop('page') + 1, args.pop('pagesize'))\
+            .dicts()
+
+        return {
+            'count': count,
+            'data': list(data)
+        }

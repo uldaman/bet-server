@@ -8,9 +8,10 @@ from repository import mysql_db
 from config import database, user, password
 
 
-app = Flask(__name__, static_url_path='/static')
-
 mysql_db.init(database, user=user, password=password)
+
+
+app = Flask(__name__, static_url_path='/static')
 
 
 @app.before_request
